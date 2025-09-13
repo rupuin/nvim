@@ -102,12 +102,19 @@ return {
 					})
 				end
 
-				-- keymap("gd", fzf.lsp_definitions, "Go to definition")
-				-- keymap("gr", fzf.lsp_references, "Go to references")
-				-- keymap("gi", fzf.lsp_implementations, "Go to implementations")
+				keymap("gd", fzf.lsp_definitions, "Go to definition")
+				keymap("gD", fzf.lsp_declarations, "Go to declarations")
+				keymap("gr", fzf.lsp_references, "Go to references")
+				keymap("gi", fzf.lsp_implementations, "Go to implementations")
+				keymap("gy", fzf.lsp_typedefs, "Go to type definitions")
 				keymap("K", vim.lsp.buf.hover, "Hover documentation")
 				keymap("<leader>f", vim.lsp.buf.format, "Format buffer")
-				keymap("<leader>e", vim.diagnostic.open_float, "Show diagnostic")
+				keymap("<leader>e", function()
+					require("fzf-lua").diagnostics_document()
+				end, "Document Diagnostics")
+				keymap("<leader>E", function()
+					require("fzf-lua").diagnostics_workspace()
+				end, "Workspace Diagnostics")
 			end,
 		})
 

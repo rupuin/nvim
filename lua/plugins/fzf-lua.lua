@@ -28,5 +28,6 @@ return {
 		{ "<leader>/", "<cmd>FzfLua live_grep<cr>", desc = "Grep" },
 		{ "<leader>,", "<cmd>FzfLua buffers<cr>", desc = "Buffers" },
 		{ "<leader>fr", "<cmd>FzfLua oldfiles<cr>", desc = "Recent Files" },
+		{ "<leader>sm", "<cmd>FzfLua marks<cr>", desc = "Marks" },
 	},
 }
