@@ -5,14 +5,14 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 	},
 	config = function()
-		local lspconfig = require("lspconfig")
+		local lsp_util = require("lspconfig.util")
 
 		local servers = {
 			ruby_lsp = {
 				mason = false,
 				cmd = { "mise", "exec", "--", "ruby-lsp" },
 				filetypes = { "ruby" },
-				root_dir = lspconfig.util.root_pattern("Gemfile", ".git"),
+				root_dir = lsp_util.root_pattern("Gemfile", ".git"),
 				init_options = {
 					formatter = "rubocop",
 					formatterPath = "bundle",
@@ -20,7 +20,7 @@ return {
 				},
 			},
 			lua_ls = {
-				root_dir = lspconfig.util.root_pattern(
+				root_dir = lsp_util.root_pattern(
 					".luarc.json",
 					".luarc.jsonc",
 					".luacheckrc",
@@ -49,9 +49,7 @@ return {
 					yaml = {
 						completion = true,
 						keyOrdering = false,
-						format = {
-							enable = true,
-						},
+						format = { enable = true },
 						validate = true,
 						hover = true,
 						schemaStore = {
@@ -64,11 +62,13 @@ return {
 		}
 
 		local mason_servers = {}
-		for server, config in pairs(servers) do
-			if config.mason == false then
-				lspconfig[server].setup(config)
+		for name, cfg in pairs(servers) do
+			if cfg.mason == false then
+				cfg.mason = nil
+				vim.lsp.config(name, cfg)
+				vim.lsp.enable(name)
 			else
-				table.insert(mason_servers, server)
+				table.insert(mason_servers, name)
 			end
 		end
 
@@ -76,14 +76,15 @@ return {
 			ensure_installed = mason_servers,
 			handlers = {
 				function(server_name)
-					local server = servers[server_name] or {}
-					require("lspconfig")[server_name].setup(server)
+					local cfg = servers[server_name] or {}
+					vim.lsp.config(server_name, cfg)
+					vim.lsp.enable(server_name)
 				end,
 			},
 		})
+
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
-
 			callback = function(event)
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
 				local bufnr = event.buf
