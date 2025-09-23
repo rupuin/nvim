@@ -9,6 +9,13 @@ return {
 					},
 				},
 			},
+			lsp = {
+				win = {
+					size = {
+						width = 0.4,
+					},
+				},
+			},
 		},
 	},
 	cmd = "Trouble",
@@ -30,7 +37,7 @@ return {
 		},
 		{
 			"<leader>cl",
-			"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+			"<cmd>Trouble lsp toggle focus=true win.position=right<cr>",
 			desc = "LSP Definitions / references / ... (Trouble)",
 		},
 		{
