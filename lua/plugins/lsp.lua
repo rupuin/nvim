@@ -93,30 +93,18 @@ return {
 				keymap("gr", fzf.lsp_references, "Go to references")
 				keymap("gi", fzf.lsp_implementations, "Go to implementations")
 				keymap("gy", fzf.lsp_typedefs, "Go to type definitions")
-				keymap("K", vim.lsp.buf.hover, "Hover documentation")
+				keymap("K", function()
+					vim.lsp.buf.hover({
+						focus = true,
+						border = "rounded",
+						max_width = 120,
+						close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "BufLeave" },
+					})
+				end, "Hover documentation")
 				keymap("<leader>f", vim.lsp.buf.format, "Format buffer")
 			end,
 		})
 
-		-- close floating hover win after cursor move
-		vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "InsertEnter" }, {
-			group = vim.api.nvim_create_augroup("CloseLspFloats", { clear = true }),
-			callback = function()
-				for _, win in ipairs(vim.api.nvim_list_wins()) do
-					local config = vim.api.nvim_win_get_config(win)
-					if config.relative ~= "" then
-						local buf = vim.api.nvim_win_get_buf(win)
-						local buf_name = vim.api.nvim_buf_get_name(buf)
-						local filetype = vim.bo[buf].filetype
-						-- local buftype = vim.bo[buf].buftype
-
-						if filetype == "markdown" or buf_name:match("lsp_hover") then
-							vim.api.nvim_win_close(win, false)
-						end
-					end
-				end
-			end,
-		})
 		vim.diagnostic.config({
 			virtual_text = true,
 			signs = false,
