@@ -5,68 +5,67 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 	},
 	config = function()
-		-- Configure Ruby LSP with mise
-		vim.lsp.config("ruby_ls", {
-			cmd = { "mise", "exec", "--", "ruby-lsp" },
-			filetypes = { "ruby" },
-			root_dir = vim.fs.dirname(
-				vim.fs.find({ "Gemfile", ".git", ".ruby-version", "Rakefile", ".tool-versions" }, { upward = true })[1]
-			),
-			init_options = {
-				formatter = "rubocop",
-				formatterPath = "bundle",
-				formatterArgs = { "exec", "rubocop" },
-			},
-		})
-		vim.lsp.enable("ruby_ls")
+		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-		-- Configure Lua LSP
-		vim.lsp.config("lua_ls", {
-			root_dir = vim.fs.dirname(vim.fs.find({
-				".luarc.json",
-				".luarc.jsonc",
-				".luacheckrc",
-				".stylua.toml",
-				"stylua.toml",
-				"selene.toml",
-				"selene.yml",
-				".git",
-			}, { upward = true })[1]),
-			settings = {
-				Lua = {
-					runtime = { version = "LuaJIT" },
-					workspace = {
-						library = vim.api.nvim_get_runtime_file("", true),
-						checkThirdParty = false,
-					},
-					telemetry = { enable = false },
+		local function safe_root(markers)
+			local found = vim.fs.find(markers, { upward = true })[1]
+			return found and vim.fs.dirname(found) or (vim.uv and vim.uv.cwd() or vim.loop.cwd())
+		end
+
+		local servers = {
+			ruby_ls = {
+				cmd = { "mise", "exec", "--", "ruby-lsp" },
+				filetypes = { "ruby" },
+				root_dir = safe_root({ "Gemfile", ".git", ".ruby-version", "Rakefile", ".tool-versions" }),
+				init_options = {
+					formatter = "rubocop",
+					formatterPath = "bundle",
+					formatterArgs = { "exec", "rubocop" },
 				},
 			},
-		})
-		vim.lsp.enable("lua_ls")
-
-		-- Configure Go LSP
-		vim.lsp.config("gopls", {})
-		vim.lsp.enable("gopls")
-
-		-- Configure YAML LSP
-		vim.lsp.config("yamlls", {
-			filetypes = { "yaml", "yml" },
-			settings = {
-				yaml = {
-					completion = true,
-					keyOrdering = false,
-					format = { enable = true },
-					validate = true,
-					hover = true,
-					schemaStore = {
-						enable = true,
-						url = "https://www.schemastore.org/api/json/catalog.json",
+			lua_ls = {
+				root_dir = safe_root({
+					".luarc.json",
+					".luarc.jsonc",
+					".luacheckrc",
+					".stylua.toml",
+					"stylua.toml",
+					"selene.toml",
+					"selene.yml",
+					".git",
+				}),
+				settings = {
+					Lua = {
+						runtime = { version = "LuaJIT" },
+						workspace = {
+							library = vim.api.nvim_get_runtime_file("", true),
+							checkThirdParty = false,
+						},
+						telemetry = { enable = false },
 					},
 				},
 			},
-		})
-		vim.lsp.enable("yamlls")
+			gopls = {},
+			yamlls = {
+				filetypes = { "yaml", "yml" },
+				settings = {
+					yaml = {
+						completion = true,
+						keyOrdering = false,
+						format = { enable = true },
+						validate = true,
+						hover = true,
+						schemaStore = { enable = true, url = "https://www.schemastore.org/api/json/catalog.json" },
+					},
+				},
+			},
+		}
+
+		for name, opts in pairs(servers) do
+			opts.capabilities = capabilities
+			vim.lsp.config(name, opts)
+			vim.lsp.enable(name)
+		end
 
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
@@ -78,7 +77,6 @@ return {
 					require("nvim-navic").attach(client, bufnr)
 				end
 
-				local fzf = require("fzf-lua")
 				local keymap = function(keys, func, desc, mode)
 					mode = mode or "n"
 					vim.keymap.set(mode, keys, func, {
@@ -88,11 +86,11 @@ return {
 					})
 				end
 
-				keymap("gd", fzf.lsp_definitions, "Go to definition")
-				keymap("gD", fzf.lsp_declarations, "Go to declarations")
-				keymap("gr", fzf.lsp_references, "Go to references")
-				keymap("gi", fzf.lsp_implementations, "Go to implementations")
-				keymap("gy", fzf.lsp_typedefs, "Go to type definitions")
+				keymap("gd", function() require("fzf-lua").lsp_definitions() end, "Go to definition")
+				keymap("gD", function() require("fzf-lua").lsp_declarations() end, "Go to declarations")
+				keymap("gr", function() require("fzf-lua").lsp_references() end, "Go to references")
+				keymap("gi", function() require("fzf-lua").lsp_implementations() end, "Go to implementations")
+				keymap("gy", function() require("fzf-lua").lsp_typedefs() end, "Go to type definitions")
 				keymap("K", function()
 					vim.lsp.buf.hover({
 						focusable = true,
