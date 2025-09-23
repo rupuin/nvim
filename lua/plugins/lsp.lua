@@ -5,83 +5,57 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 	},
 	config = function()
-		local lsp_util = require("lspconfig.util")
-
-		local servers = {
-			ruby_lsp = {
-				mason = false,
-				cmd = { "mise", "exec", "--", "ruby-lsp" },
-				filetypes = { "ruby" },
-				root_dir = lsp_util.root_pattern("Gemfile", ".git"),
-				init_options = {
-					formatter = "rubocop",
-					formatterPath = "bundle",
-					formatterArgs = { "exec", "rubocop" },
-				},
-			},
-			lua_ls = {
-				root_dir = lsp_util.root_pattern(
-					".luarc.json",
-					".luarc.jsonc",
-					".luacheckrc",
-					".stylua.toml",
-					"stylua.toml",
-					"selene.toml",
-					"selene.yml",
-					".git"
-				),
-				settings = {
-					Lua = {
-						runtime = { version = "LuaJIT" },
-						workspace = {
-							library = vim.api.nvim_get_runtime_file("", true),
-							checkThirdParty = false,
-						},
-						telemetry = { enable = false },
-					},
-				},
-			},
-			gopls = {},
-			yamlls = {
-				mason = true,
-				filetypes = { "yaml", "yml" },
-				settings = {
-					yaml = {
-						completion = true,
-						keyOrdering = false,
-						format = { enable = true },
-						validate = true,
-						hover = true,
-						schemaStore = {
-							enable = true,
-							url = "https://www.schemastore.org/api/json/catalog.json",
-						},
-					},
-				},
-			},
-		}
-
-		local mason_servers = {}
-		for name, cfg in pairs(servers) do
-			if cfg.mason == false then
-				cfg.mason = nil
-				vim.lsp.config(name, cfg)
-				vim.lsp.enable(name)
-			else
-				table.insert(mason_servers, name)
-			end
-		end
-
-		require("mason-lspconfig").setup({
-			ensure_installed = mason_servers,
-			handlers = {
-				function(server_name)
-					local cfg = servers[server_name] or {}
-					vim.lsp.config(server_name, cfg)
-					vim.lsp.enable(server_name)
-				end,
+		-- Configure Ruby LSP with mise
+		vim.lsp.config("ruby_ls", {
+			cmd = { "mise", "exec", "--", "ruby-lsp" },
+			filetypes = { "ruby" },
+			root_dir = vim.fs.dirname(vim.fs.find({ "Gemfile", ".git", ".ruby-version", "Rakefile", ".tool-versions" }, { upward = true })[1]),
+			init_options = {
+				formatter = "rubocop",
+				formatterPath = "bundle",
+				formatterArgs = { "exec", "rubocop" },
 			},
 		})
+		vim.lsp.enable("ruby_ls")
+
+		-- Configure Lua LSP
+		vim.lsp.config("lua_ls", {
+			root_dir = vim.fs.dirname(vim.fs.find({ ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" }, { upward = true })[1]),
+			settings = {
+				Lua = {
+					runtime = { version = "LuaJIT" },
+					workspace = {
+						library = vim.api.nvim_get_runtime_file("", true),
+						checkThirdParty = false,
+					},
+					telemetry = { enable = false },
+				},
+			},
+		})
+		vim.lsp.enable("lua_ls")
+
+		-- Configure Go LSP
+		vim.lsp.config("gopls", {})
+		vim.lsp.enable("gopls")
+
+		-- Configure YAML LSP
+		vim.lsp.config("yamlls", {
+			filetypes = { "yaml", "yml" },
+			settings = {
+				yaml = {
+					completion = true,
+					keyOrdering = false,
+					format = { enable = true },
+					validate = true,
+					hover = true,
+					schemaStore = {
+						enable = true,
+						url = "https://www.schemastore.org/api/json/catalog.json",
+					},
+				},
+			},
+		})
+		vim.lsp.enable("yamlls")
 
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
