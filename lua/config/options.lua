@@ -20,8 +20,3 @@ vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
 vim.opt.undofile = true
-vim.diagnostic.config({
-	virtual_text = true, -- show errors/warnings inline as virtual text
-	underline = true, -- underline problematic text
-	update_in_insert = true,
-})

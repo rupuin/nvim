@@ -9,7 +9,9 @@ return {
 		vim.lsp.config("ruby_ls", {
 			cmd = { "mise", "exec", "--", "ruby-lsp" },
 			filetypes = { "ruby" },
-			root_dir = vim.fs.dirname(vim.fs.find({ "Gemfile", ".git", ".ruby-version", "Rakefile", ".tool-versions" }, { upward = true })[1]),
+			root_dir = vim.fs.dirname(
+				vim.fs.find({ "Gemfile", ".git", ".ruby-version", "Rakefile", ".tool-versions" }, { upward = true })[1]
+			),
 			init_options = {
 				formatter = "rubocop",
 				formatterPath = "bundle",
@@ -20,7 +22,16 @@ return {
 
 		-- Configure Lua LSP
 		vim.lsp.config("lua_ls", {
-			root_dir = vim.fs.dirname(vim.fs.find({ ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" }, { upward = true })[1]),
+			root_dir = vim.fs.dirname(vim.fs.find({
+				".luarc.json",
+				".luarc.jsonc",
+				".luacheckrc",
+				".stylua.toml",
+				"stylua.toml",
+				"selene.toml",
+				"selene.yml",
+				".git",
+			}, { upward = true })[1]),
 			settings = {
 				Lua = {
 					runtime = { version = "LuaJIT" },
@@ -84,12 +95,18 @@ return {
 				keymap("gy", fzf.lsp_typedefs, "Go to type definitions")
 				keymap("K", vim.lsp.buf.hover, "Hover documentation")
 				keymap("<leader>f", vim.lsp.buf.format, "Format buffer")
-				keymap("<leader>e", function()
-					require("fzf-lua").diagnostics_document()
-				end, "Document Diagnostics")
-				keymap("<leader>E", function()
-					require("fzf-lua").diagnostics_workspace()
-				end, "Workspace Diagnostics")
+			end,
+		})
+
+		-- close floating hover win after cursor move
+		vim.api.nvim_create_autocmd("CursorMoved", {
+			group = vim.api.nvim_create_augroup("CloseLspFloats", { clear = true }),
+			callback = function()
+				for _, win in ipairs(vim.api.nvim_list_wins()) do
+					if vim.api.nvim_win_get_config(win).relative ~= "" then
+						vim.api.nvim_win_close(win, false)
+					end
+				end
 			end,
 		})
 
