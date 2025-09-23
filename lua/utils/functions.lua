@@ -1,5 +1,21 @@
 local M = {}
 
+function M.focus_hover_window()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local cfg = vim.api.nvim_win_get_config(win)
+		if cfg.relative ~= "" then
+			local buf = vim.api.nvim_win_get_buf(win)
+			local ft = vim.bo[buf].filetype
+			local name = vim.api.nvim_buf_get_name(buf)
+			if ft == "markdown" or name:match("lsp_hover") then
+				vim.api.nvim_set_current_win(win)
+				return true
+			end
+		end
+	end
+	return false
+end
+
 function M.find_pr_of_current_line()
 	local file_name = vim.api.nvim_buf_get_name(0)
 	local line_number = vim.api.nvim_win_get_cursor(0)[1]

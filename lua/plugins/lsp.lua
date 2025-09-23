@@ -95,12 +95,25 @@ return {
 				keymap("gy", fzf.lsp_typedefs, "Go to type definitions")
 				keymap("K", function()
 					vim.lsp.buf.hover({
-						focus = true,
+						focusable = true,
 						border = "rounded",
 						max_width = 120,
 						close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "BufLeave" },
 					})
 				end, "Hover documentation")
+
+				local util_fns = require("utils.functions")
+
+				keymap("<leader>K", function()
+					vim.lsp.buf.hover({
+						focusable = true,
+						border = "rounded",
+						max_width = 120,
+					})
+					vim.defer_fn(function()
+						util_fns.focus_hover_window()
+					end, 10)
+				end, "Hover (focus window to scroll)")
 				keymap("<leader>f", vim.lsp.buf.format, "Format buffer")
 			end,
 		})
