@@ -46,6 +46,19 @@ return {
 				},
 			},
 			gopls = {},
+			vscode_solidity_server = {
+				cmd = { "vscode-solidity-server", "--stdio" },
+				filetypes = { "solidity" },
+				root_dir = safe_root({
+					"hardhat.config.js",
+					"hardhat.config.ts",
+					"foundry.toml",
+					"remappings.txt",
+					"truffle-config.js",
+					".git",
+				}),
+				settings = {},
+			},
 			yamlls = {
 				filetypes = { "yaml", "yml" },
 				settings = {
@@ -86,11 +99,21 @@ return {
 					})
 				end
 
-				keymap("gd", function() require("fzf-lua").lsp_definitions() end, "Go to definition")
-				keymap("gD", function() require("fzf-lua").lsp_declarations() end, "Go to declarations")
-				keymap("gr", function() require("fzf-lua").lsp_references() end, "Go to references")
-				keymap("gi", function() require("fzf-lua").lsp_implementations() end, "Go to implementations")
-				keymap("gy", function() require("fzf-lua").lsp_typedefs() end, "Go to type definitions")
+				keymap("gd", function()
+					require("fzf-lua").lsp_definitions()
+				end, "Go to definition")
+				keymap("gD", function()
+					require("fzf-lua").lsp_declarations()
+				end, "Go to declarations")
+				keymap("gr", function()
+					require("fzf-lua").lsp_references()
+				end, "Go to references")
+				keymap("gi", function()
+					require("fzf-lua").lsp_implementations()
+				end, "Go to implementations")
+				keymap("gy", function()
+					require("fzf-lua").lsp_typedefs()
+				end, "Go to type definitions")
 				keymap("K", function()
 					vim.lsp.buf.hover({
 						focusable = true,

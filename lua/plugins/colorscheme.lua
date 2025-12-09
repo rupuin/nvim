@@ -1,9 +1,11 @@
 return {
-	"lewpoly/sherbet.nvim",
+	"folke/tokyonight.nvim",
 	lazy = false,
 	priority = 1000,
 	init = function()
-		vim.cmd.colorscheme("sherbet")
+		vim.cmd.colorscheme("tokyonight")
 	end,
-	opts = { ... },
+	opts = {
+		style = "storm",
+	},
 }
