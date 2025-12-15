@@ -7,58 +7,23 @@ return {
 	config = function()
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-		local function safe_root(markers)
-			local found = vim.fs.find(markers, { upward = true })[1]
-			return found and vim.fs.dirname(found) or (vim.uv and vim.uv.cwd() or vim.loop.cwd())
-		end
-
 		local servers = {
+			lua_ls = {},
+			gopls = {},
+			ts_ls = {},
+			pyright = {},
 			ruby_ls = {
 				cmd = { "mise", "exec", "--", "ruby-lsp" },
 				filetypes = { "ruby" },
-				root_dir = safe_root({ "Gemfile", ".git", ".ruby-version", "Rakefile", ".tool-versions" }),
 				init_options = {
 					formatter = "rubocop",
 					formatterPath = "bundle",
 					formatterArgs = { "exec", "rubocop" },
 				},
 			},
-			lua_ls = {
-				root_dir = safe_root({
-					".luarc.json",
-					".luarc.jsonc",
-					".luacheckrc",
-					".stylua.toml",
-					"stylua.toml",
-					"selene.toml",
-					"selene.yml",
-					".git",
-				}),
-				settings = {
-					Lua = {
-						runtime = { version = "LuaJIT" },
-						workspace = {
-							library = vim.api.nvim_get_runtime_file("", true),
-							checkThirdParty = false,
-						},
-						telemetry = { enable = false },
-					},
-				},
-			},
-			gopls = {},
-			vscode_solidity_server = {
-				cmd = { "vscode-solidity-server", "--stdio" },
-				filetypes = { "solidity" },
-				root_dir = safe_root({
-					"hardhat.config.js",
-					"hardhat.config.ts",
-					"foundry.toml",
-					"remappings.txt",
-					"truffle-config.js",
-					".git",
-				}),
-				settings = {},
-			},
+			-- vscode_solidity_server = {
+			-- 	cmd = { "vscode-solidity-server", "--stdio" },
+			-- },
 			yamlls = {
 				filetypes = { "yaml", "yml" },
 				settings = {
@@ -70,6 +35,9 @@ return {
 						hover = true,
 						schemaStore = { enable = true, url = "https://www.schemastore.org/api/json/catalog.json" },
 					},
+				},
+				redhat = {
+					telemetry = { enabled = false },
 				},
 			},
 		}
@@ -135,7 +103,9 @@ return {
 						util_fns.focus_hover_window()
 					end, 10)
 				end, "Hover (focus window to scroll)")
-				keymap("<leader>f", vim.lsp.buf.format, "Format buffer")
+				keymap("<leader>f", function()
+					require("conform").format({ async = true, lsp_fallback = false })
+				end, "Format buffer")
 			end,
 		})
 

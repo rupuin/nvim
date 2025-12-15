@@ -14,18 +14,27 @@ return {
 			timeout = 3000,
 		},
 		picker = {
-			enabled = true,
+			previewers = {
+				diff = {
+					builtin = false,
+					style = "fancy",
+					wo = {
+						breakindent = true,
+						wrap = true,
+						linebreak = false,
+						showbreak = "",
+					},
+				},
+			},
+			git = {
+				builtin = false,
+			},
 		},
 		quickfile = { enabled = false },
 		scope = { enabled = false },
 		scroll = { enabled = false },
 		statuscolumn = { enabled = true },
 		words = { enabled = false },
-		styles = {
-			notification = {
-				-- wo = { wrap = true } -- Wrap notifications
-			},
-		},
 	},
 	keys = {
 		-- git

@@ -14,6 +14,8 @@ return {
 			go = { "goimports" },
 			yaml = { "prettier" },
 			yml = { "prettier" },
+			typescript = { "prettier" },
+			python = { "ruff_format" },
 		},
 		format_on_save = { timeout_ms = 5000 },
 	},

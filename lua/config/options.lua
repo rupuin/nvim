@@ -1,8 +1,6 @@
 vim.opt.timeoutlen = 300
-
 vim.o.cursorline = true
 vim.o.laststatus = 3
-
 vim.opt.clipboard = "unnamedplus"
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -17,4 +15,3 @@ vim.opt.termguicolors = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 vim.opt.undofile = true
-
