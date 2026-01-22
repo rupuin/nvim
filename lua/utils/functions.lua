@@ -145,6 +145,12 @@ function M.go_to_test()
 			test_postfix = "_test.go",
 			src_postfix = ".go",
 		},
+		typescript = {
+			test_dir = "/tests/",
+			src_dir = "/src/",
+			test_postfix = ".test.ts",
+			src_postfix = ".ts",
+		},
 	}
 
 	local lang = lang_map[filetype]
@@ -161,9 +167,11 @@ function M.go_to_test()
 		end
 	else
 		if current_file:match(lang.test_dir) then
-			target_file = current_file:gsub(lang.test_dir, lang.src_dir):gsub(lang.test_postfix, lang.src_postfix)
+			target_file =
+				current_file:gsub(lang.test_dir, lang.src_dir, 1):gsub(lang.test_postfix .. "$", lang.src_postfix)
 		else
-			target_file = current_file:gsub(lang.src_dir, lang.test_dir):gsub(lang.src_postfix, lang.test_postfix)
+			target_file =
+				current_file:gsub(lang.src_dir, lang.test_dir, 1):gsub(lang.src_postfix .. "$", lang.test_postfix)
 		end
 	end
 
@@ -171,6 +179,17 @@ function M.go_to_test()
 		vim.notify(("Can't find file: %s"):format(target_file))
 	end
 
+	-- Create parent directories if they don't exist
+	local target_dir = vim.fn.fnamemodify(target_file, ":h")
+	if vim.fn.isdirectory(target_dir) == 0 then
+		vim.fn.mkdir(target_dir, "p")
+		vim.notify(("Created directory: %s"):format(target_dir))
+	end
+
+	-- Notify if creating a new file
+	if vim.fn.filereadable(target_file) == 0 then
+		vim.notify(("Creating new file: %s"):format(target_file))
+	end
 	vim.cmd("edit " .. target_file)
 end
 

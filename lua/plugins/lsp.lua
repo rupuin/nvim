@@ -8,9 +8,11 @@ return {
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 		local servers = {
+			jsonls = {},
 			lua_ls = {},
 			gopls = {},
-			ts_ls = {},
+			vtsls = {},
+			biome = {},
 			pyright = {},
 			ruby_ls = {
 				cmd = { "mise", "exec", "--", "ruby-lsp" },
@@ -21,9 +23,9 @@ return {
 					formatterArgs = { "exec", "rubocop" },
 				},
 			},
-			-- vscode_solidity_server = {
-			-- 	cmd = { "vscode-solidity-server", "--stdio" },
-			-- },
+			solidity_ls = {
+				cmd = { "nomicfoundation-solidity-language-server", "--stdio" },
+			},
 			yamlls = {
 				filetypes = { "yaml", "yml" },
 				settings = {

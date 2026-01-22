@@ -17,6 +17,7 @@ return {
 				},
 			},
 		},
+		win = { wo = { wrap = true } },
 	},
 	cmd = "Trouble",
 	keys = {

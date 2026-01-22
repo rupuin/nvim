@@ -14,14 +14,12 @@ return {
 		config.defaults.keymap.builtin["<c-l>"] = "select_split"
 
 		opts.files = opts.files or {}
-		-- removes the path from picker search window
 		opts.files.cwd_prompt = false
 		return opts
 	end,
 	config = function(_, opts)
 		local fzf = require("fzf-lua")
 		fzf.setup(opts)
-		-- fzf.register_ui_select()
 	end,
 	keys = {
 		{ "<leader><leader>", "<cmd>FzfLua files<cr>", desc = "Find Files" },
