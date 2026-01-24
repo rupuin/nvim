@@ -15,3 +15,9 @@ vim.opt.termguicolors = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 vim.opt.undofile = true
+vim.filetype.add({
+	pattern = {
+		["%.env%..*"] = "properties",
+		["%.env"] = "properties",
+	},
+})
