@@ -151,6 +151,12 @@ function M.go_to_test()
 			test_postfix = ".test.ts",
 			src_postfix = ".ts",
 		},
+		python = {
+			test_dir = "/tests/unit/",
+			src_dir = "/app/",
+			test_prefix = "test_",
+			src_postfix = ".py",
+		},
 	}
 
 	local lang = lang_map[filetype]
@@ -164,6 +170,22 @@ function M.go_to_test()
 			target_file = current_file:gsub("_test%.go$", ".go")
 		else
 			target_file = current_file:gsub("%.go$", "_test.go")
+		end
+	elseif filetype == "python" then
+		-- Python uses test_ prefix instead of postfix
+		local dir = vim.fn.fnamemodify(current_file, ":h")
+		local filename = vim.fn.fnamemodify(current_file, ":t")
+
+		if current_file:match(lang.test_dir) then
+			-- In test file -> go to source
+			local src_dir = dir:gsub(lang.test_dir, lang.src_dir, 1)
+			local src_filename = filename:gsub("^test_", "")
+			target_file = src_dir .. "/" .. src_filename
+		else
+			-- In source file -> go to test
+			local test_dir = dir:gsub(lang.src_dir, lang.test_dir, 1)
+			local test_filename = lang.test_prefix .. filename
+			target_file = test_dir .. "/" .. test_filename
 		end
 	else
 		if current_file:match(lang.test_dir) then
