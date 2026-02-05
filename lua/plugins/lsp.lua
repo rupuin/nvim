@@ -9,7 +9,27 @@ return {
 
 		local servers = {
 			jsonls = {},
-			lua_ls = {},
+			lua_ls = {
+				settings = {
+					Lua = {
+						runtime = {
+							version = "LuaJIT",
+						},
+						diagnostics = {
+							globals = { "vim" },
+						},
+						workspace = {
+							library = {
+								vim.fn.expand("$HOME/.local/share/nvim/lazy"),
+								vim.env.VIMRUNTIME,
+							},
+
+							checkThirdParty = false,
+						},
+						telemetry = { enable = false },
+					},
+				},
+			},
 			gopls = {},
 			vtsls = {},
 			biome = {},
