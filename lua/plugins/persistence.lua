@@ -8,41 +8,23 @@ return {
 			branch = true,
 		})
 
-		-- mark Oil buffers as unlisted before saving
+		-- Close plugin windows/buffers before saving so they never end up in sessions.
+		-- persistence.nvim has no built-in exclude option; PersistenceSavePre is the documented approach.
+		local excluded_fts = { "oil", "Outline", "OutlineHelp", "aerial" }
+		local excluded_bts = { "terminal" }
+
 		vim.api.nvim_create_autocmd("User", {
 			pattern = "PersistenceSavePre",
 			callback = function()
 				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 					if vim.api.nvim_buf_is_valid(buf) then
-						local name = vim.api.nvim_buf_get_name(buf)
-						local ft = vim.bo[buf].filetype
-
-						if ft == "oil" or name:match("^oil://") then
-							vim.bo[buf].buflisted = false
+						local dominated = vim.tbl_contains(excluded_fts, vim.bo[buf].filetype)
+							or vim.tbl_contains(excluded_bts, vim.bo[buf].buftype)
+						if dominated then
+							vim.api.nvim_buf_delete(buf, { force = true })
 						end
 					end
 				end
-			end,
-		})
-
-		-- clean up restored Oil buffers after loading
-		vim.api.nvim_create_autocmd("User", {
-			pattern = "PersistenceLoadPost",
-			callback = function()
-				vim.defer_fn(function()
-					for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-						if vim.api.nvim_buf_is_valid(buf) then
-							local name = vim.api.nvim_buf_get_name(buf)
-							local ok, ft = pcall(function()
-								return vim.bo[buf].filetype
-							end)
-
-							if (ok and ft == "oil") or name:match("^oil://") then
-								vim.api.nvim_buf_delete(buf, { force = true })
-							end
-						end
-					end
-				end, 50)
 			end,
 		})
 	end,

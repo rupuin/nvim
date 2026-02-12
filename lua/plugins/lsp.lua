@@ -33,7 +33,21 @@ return {
 			gopls = {},
 			vtsls = {},
 			biome = {},
-			pyright = {},
+			basedpyright = {
+				root_dir = vim.fs.root(0, { "pyrightconfig.json", "pyproject.toml", ".git" }),
+				settings = {
+					python = {
+						pythonPath = ".venv/bin/python",
+						analysis = {
+							typeCheckingMode = "basic",
+							autoSearchPaths = true,
+							useLibraryCodeForTypes = true,
+							diagnosticMode = "workspace",
+							extraPaths = { vim.fn.getcwd() },
+						},
+					},
+				},
+			},
 			ruby_ls = {
 				cmd = { "mise", "exec", "--", "ruby-lsp" },
 				filetypes = { "ruby" },
@@ -75,6 +89,7 @@ return {
 			callback = function(event)
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
 				local bufnr = event.buf
+				local fzf = require("fzf-lua")
 
 				if client and client.server_capabilities.documentSymbolProvider then
 					require("nvim-navic").attach(client, bufnr)
@@ -89,21 +104,57 @@ return {
 					})
 				end
 
+				local only_symbol_kinds = function(kinds)
+					local allow = {}
+					for _, kind in ipairs(kinds) do
+						allow[kind] = true
+					end
+
+					return function(item)
+						local kind = item.kind or (item.text and item.text:match("%[(.-)%]"))
+						return kind and allow[kind] or false
+					end
+				end
+
+				local symbol_picker_opts = {
+					child_prefix = false,
+					parent_postfix = " > ",
+					symbol_style = 1,
+				}
+
 				keymap("gd", function()
-					require("fzf-lua").lsp_definitions()
+					fzf.lsp_definitions()
 				end, "Go to definition")
 				keymap("gD", function()
-					require("fzf-lua").lsp_declarations()
+					fzf.lsp_declarations()
 				end, "Go to declarations")
 				keymap("gr", function()
-					require("fzf-lua").lsp_references()
+					fzf.lsp_references()
 				end, "Go to references")
 				keymap("gi", function()
-					require("fzf-lua").lsp_implementations()
+					fzf.lsp_implementations()
 				end, "Go to implementations")
 				keymap("gy", function()
-					require("fzf-lua").lsp_typedefs()
+					fzf.lsp_typedefs()
 				end, "Go to type definitions")
+				keymap("gO", function()
+					fzf.lsp_document_symbols(symbol_picker_opts)
+				end, "Document symbols")
+				keymap("<leader>sf", function()
+					fzf.lsp_document_symbols(vim.tbl_deep_extend("force", symbol_picker_opts, {
+						regex_filter = only_symbol_kinds({ "Function", "Method" }),
+					}))
+				end, "Symbols: functions")
+				keymap("<leader>sv", function()
+					fzf.lsp_document_symbols(vim.tbl_deep_extend("force", symbol_picker_opts, {
+						regex_filter = only_symbol_kinds({ "Variable", "Field", "Property", "Object" }),
+					}))
+				end, "Symbols: variables")
+				keymap("<leader>st", function()
+					fzf.lsp_document_symbols(vim.tbl_deep_extend("force", symbol_picker_opts, {
+						regex_filter = only_symbol_kinds({ "Class", "Struct", "Interface", "Enum", "TypeParameter" }),
+					}))
+				end, "Symbols: types")
 				keymap("K", function()
 					vim.lsp.buf.hover({
 						focusable = true,

@@ -15,6 +15,8 @@ return {
 
 		opts.files = opts.files or {}
 		opts.files.cwd_prompt = false
+		opts.lsp = opts.lsp or {}
+		opts.lsp.trim_entry = true
 		return opts
 	end,
 	config = function(_, opts)
