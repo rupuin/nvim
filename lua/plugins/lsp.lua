@@ -8,7 +8,7 @@ return {
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 		local servers = {
-			jsonls = {},
+			-- jsonls = {},
 			lua_ls = {
 				settings = {
 					Lua = {
@@ -34,16 +34,23 @@ return {
 			vtsls = {},
 			biome = {},
 			basedpyright = {
-				root_dir = vim.fs.root(0, { "pyrightconfig.json", "pyproject.toml", ".git" }),
+				before_init = function(_, config)
+					local root = config.root_dir
+					if not root then
+						return
+					end
+
+					local python = root .. "/.venv/bin/python"
+					if vim.fn.executable(python) == 1 then
+						config.settings = vim.tbl_deep_extend("force", config.settings or {}, {
+							python = { pythonPath = python },
+						})
+					end
+				end,
 				settings = {
-					python = {
-						pythonPath = ".venv/bin/python",
+					basedpyright = {
 						analysis = {
-							typeCheckingMode = "basic",
-							autoSearchPaths = true,
-							useLibraryCodeForTypes = true,
 							diagnosticMode = "workspace",
-							extraPaths = { vim.fn.getcwd() },
 						},
 					},
 				},

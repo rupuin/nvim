@@ -10,6 +10,7 @@ return {
 		return {
 			options = {
 				globalstatus = true,
+				section_separators = { left = "", right = "" },
 			},
 			sections = {
 				lualine_c = {
@@ -33,11 +34,6 @@ return {
 						cond = function()
 							return vim.fn.reg_recording() ~= ""
 						end,
-					},
-				},
-				lualine_z = {
-					{
-						require("opencode").statusline,
 					},
 				},
 			},
