@@ -16,6 +16,7 @@ return {
 			css = { ft = { "css" } },
 			typescript = { ft = { "typescript" } },
 			tsx = { ft = { "typescriptreact" } },
+			javascript = { ft = { "javascript", "javascriptreact" } },
 			dart = { ft = { "dart" } },
 			c = { ft = { "c" } },
 			properties = { ft = { "properties" } },
