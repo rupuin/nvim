@@ -164,7 +164,6 @@ return {
 				keymap("K", function()
 					vim.lsp.buf.hover({
 						focusable = true,
-						border = "rounded",
 						max_width = 120,
 						close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "BufLeave" },
 					})

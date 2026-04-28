@@ -10,9 +10,7 @@ return {
 		},
 		views = {
 			hover = {
-				border = {
-					style = "rounded",
-				},
+				border = {},
 			},
 		},
 	},
