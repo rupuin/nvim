@@ -8,7 +8,6 @@ return {
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 		local servers = {
-			-- jsonls = {},
 			lua_ls = {
 				settings = {
 					Lua = {
@@ -171,18 +170,6 @@ return {
 					})
 				end, "Hover documentation")
 
-				local util_fns = require("utils.functions")
-
-				keymap("<leader>K", function()
-					vim.lsp.buf.hover({
-						focusable = true,
-						border = "rounded",
-						max_width = 120,
-					})
-					vim.defer_fn(function()
-						util_fns.focus_hover_window()
-					end, 10)
-				end, "Hover (focus window to scroll)")
 				keymap("<leader>f", function()
 					require("conform").format({ async = true, lsp_fallback = false })
 				end, "Format buffer")

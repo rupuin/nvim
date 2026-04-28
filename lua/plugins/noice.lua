@@ -8,6 +8,13 @@ return {
 		popupmenu = {
 			enabled = true,
 		},
+		views = {
+			hover = {
+				border = {
+					style = "rounded",
+				},
+			},
+		},
 	},
 	dependencies = {
 		-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
