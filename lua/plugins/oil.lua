@@ -7,10 +7,10 @@ return {
 			-- Oil will take over directory editing by default
 			default_file_explorer = true,
 			columns = {
-				"icon",
 				-- "permissions",
 				-- "size",
-				-- "mtime",
+				{ "mtime", format = "%Y-%m-%d %H:%M" },
+				"icon",
 			},
 			buf_options = {
 				buflisted = false,

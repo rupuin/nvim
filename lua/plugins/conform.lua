@@ -24,6 +24,11 @@ return {
 	"stevearc/conform.nvim",
 	opts = {
 		formatters = {
+			dart_format = {
+				command = "fvm",
+				args = { "dart", "format", "$FILENAME" },
+				stdin = false,
+			},
 			rubocop = {
 				command = "mise",
 				args = {
@@ -60,6 +65,7 @@ return {
 		},
 		formatters_by_ft = {
 			lua = { "stylua" },
+			dart = { "dart_format" },
 			ruby = { "rubocop" },
 			go = { "goimports" },
 			python = { "ruff_format", "docformatter" },
